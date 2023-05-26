@@ -1,19 +1,19 @@
-import express  from "express";
-import {json} from 'body-parser';
-import { currentUserRouter } from "./routes/current-user";
-import { signinRouter } from "./routes/signin";
-import { signoutRouter } from "./routes/signout";
-import { signupRouter } from "./routes/singup";
-import { errorHandle } from "./middlewares/error-handle";
-const app = express();
-app.use(json())
-app.use(currentUserRouter)
-app.use(signinRouter)
-app.use(signoutRouter)
-app.use(signupRouter)
+import mongoose from "mongoose";
+import { app } from "./app";
 
-app.use(errorHandle)
+const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("env not define");
+  }
+  try {
+    await mongoose.connect("mongodb://auth-mongo-service:27017/auth");
+    console.log("Connected to mogoDB");
+  } catch (error) {
+    console.log(error);
+  }
+  app.listen(3000, () => {
+    console.log("Auth service listen on port 3000");
+  });
+};
 
-app.listen(3000, () => {
-    console.log('Auth service listen on port 3000')
-})
+start();
